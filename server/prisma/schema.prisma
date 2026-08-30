@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Status {
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+}
+
+enum InterviewType {
+  PHONE_SCREEN
+  TECHNICAL
+  ONSITE
+  FINAL
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  lastName String
+  email String @unique
+  password String
+  createdAt DateTime @default(now())
+  applications Application[]
+}
+
+model Application {
+  id String @id @default(uuid())
+  company String
+  userId String
+  status Status @default(APPLIED)
+  position String
+  appliedDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  notes String?
+  user User @relation(fields: [userId], references: [id])
+
+  interviews Interview[]
+}
+
+
+model Interview {
+  id String @id @default(uuid())
+  applicationId String
+  application Application @relation(fields: [applicationId], references: [id])
+  scheduledAt DateTime @default(now())
+  notes String?
+  interviewType InterviewType @default(PHONE_SCREEN)
+  createdAt DateTime @default(now())
+}
